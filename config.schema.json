@@ -1,0 +1,376 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "$ref": "#/definitions/FlutterAppConfig",
+    "definitions": {
+        "FlutterAppConfig": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "metadata": {
+                    "$ref": "#/definitions/Metadata"
+                },
+                "platform_specific": {
+                    "$ref": "#/definitions/PlatformSpecific"
+                },
+                "visual_assets": {
+                    "$ref": "#/definitions/VisualAssets"
+                },
+                "integrations": {
+                    "$ref": "#/definitions/Integrations"
+                },
+                "signing_details": {
+                    "$ref": "#/definitions/SigningDetails"
+                }
+            },
+            "required": [
+                "integrations",
+                "metadata",
+                "platform_specific",
+                "signing_details",
+                "visual_assets"
+            ],
+            "title": "FlutterAppConfig"
+        },
+        "Integrations": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "firebase": {
+                    "$ref": "#/definitions/Firebase"
+                },
+                "analytics_tool": {
+                    "$ref": "#/definitions/AnalyticsTool"
+                }
+            },
+            "required": [
+                "analytics_tool",
+                "firebase"
+            ],
+            "title": "Integrations"
+        },
+        "AnalyticsTool": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "api_key": {
+                    "type": "string"
+                },
+                "other_config": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "api_key",
+                "other_config"
+            ],
+            "title": "AnalyticsTool"
+        },
+        "Firebase": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "android_config_path": {
+                    "type": "string"
+                },
+                "ios_config_path": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "android_config_path",
+                "ios_config_path"
+            ],
+            "title": "Firebase"
+        },
+        "Metadata": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "display_name": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                },
+                "build_number": {
+                    "type": "string",
+                    "format": "integer"
+                }
+            },
+            "required": [
+                "build_number",
+                "description",
+                "display_name",
+                "name",
+                "version"
+            ],
+            "title": "Metadata"
+        },
+        "PlatformSpecific": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "android": {
+                    "$ref": "#/definitions/PlatformSpecificAndroid"
+                },
+                "ios": {
+                    "$ref": "#/definitions/PlatformSpecificIos"
+                }
+            },
+            "required": [
+                "android",
+                "ios"
+            ],
+            "title": "PlatformSpecific"
+        },
+        "PlatformSpecificAndroid": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "package_name": {
+                    "type": "string"
+                },
+                "min_sdk_version": {
+                    "type": "integer"
+                },
+                "target_sdk_version": {
+                    "type": "integer"
+                },
+                "permissions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "google_services_json": {
+                    "type": "string"
+                },
+                "signing_config": {
+                    "$ref": "#/definitions/SigningConfig"
+                }
+            },
+            "required": [
+                "google_services_json",
+                "min_sdk_version",
+                "package_name",
+                "permissions",
+                "signing_config",
+                "target_sdk_version"
+            ],
+            "title": "PlatformSpecificAndroid"
+        },
+        "SigningConfig": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "key_alias": {
+                    "type": "string"
+                },
+                "key_password": {
+                    "type": "string"
+                },
+                "key_store_path": {
+                    "type": "string"
+                },
+                "key_store_password": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "key_alias",
+                "key_password",
+                "key_store_password",
+                "key_store_path"
+            ],
+            "title": "SigningConfig"
+        },
+        "PlatformSpecificIos": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "bundle_id": {
+                    "type": "string"
+                },
+                "permissions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "device_orientation": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "push_notification_config": {
+                    "$ref": "#/definitions/PushNotificationConfig"
+                }
+            },
+            "required": [
+                "bundle_id",
+                "device_orientation",
+                "permissions",
+                "push_notification_config"
+            ],
+            "title": "PlatformSpecificIos"
+        },
+        "PushNotificationConfig": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "certificate_path": {
+                    "type": "string"
+                },
+                "certificate_password": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "certificate_password",
+                "certificate_path"
+            ],
+            "title": "PushNotificationConfig"
+        },
+        "SigningDetails": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "android": {
+                    "$ref": "#/definitions/SigningDetailsAndroid"
+                },
+                "ios": {
+                    "$ref": "#/definitions/SigningDetailsIos"
+                }
+            },
+            "required": [
+                "android",
+                "ios"
+            ],
+            "title": "SigningDetails"
+        },
+        "SigningDetailsAndroid": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "signing_config": {
+                    "$ref": "#/definitions/SigningConfig"
+                }
+            },
+            "required": [
+                "signing_config"
+            ],
+            "title": "SigningDetailsAndroid"
+        },
+        "SigningDetailsIos": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "push_notification_config": {
+                    "$ref": "#/definitions/PushNotificationConfig"
+                }
+            },
+            "required": [
+                "push_notification_config"
+            ],
+            "title": "SigningDetailsIos"
+        },
+        "VisualAssets": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "icons": {
+                    "$ref": "#/definitions/Icons"
+                },
+                "splash_screens": {
+                    "$ref": "#/definitions/Icons"
+                },
+                "store_images": {
+                    "$ref": "#/definitions/StoreImages"
+                }
+            },
+            "required": [
+                "icons",
+                "splash_screens",
+                "store_images"
+            ],
+            "title": "VisualAssets"
+        },
+        "Icons": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "android_mdpi": {
+                    "type": "string"
+                },
+                "android_hdpi": {
+                    "type": "string"
+                },
+                "android_xhdpi": {
+                    "type": "string"
+                },
+                "android_xxhdpi": {
+                    "type": "string"
+                },
+                "android_xxxhdpi": {
+                    "type": "string"
+                },
+                "ios_1x": {
+                    "type": "string"
+                },
+                "ios_2x": {
+                    "type": "string"
+                },
+                "ios_3x": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "android_hdpi",
+                "android_mdpi",
+                "android_xhdpi",
+                "android_xxhdpi",
+                "android_xxxhdpi",
+                "ios_1x",
+                "ios_2x",
+                "ios_3x"
+            ],
+            "title": "Icons"
+        },
+        "StoreImages": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "android_screenshot1": {
+                    "type": "string"
+                },
+                "android_screenshot2": {
+                    "type": "string"
+                },
+                "android_feature_graphic": {
+                    "type": "string"
+                },
+                "ios_screenshot1": {
+                    "type": "string"
+                },
+                "ios_screenshot2": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "android_feature_graphic",
+                "android_screenshot1",
+                "android_screenshot2",
+                "ios_screenshot1",
+                "ios_screenshot2"
+            ],
+            "title": "StoreImages"
+        }
+    }
+}
