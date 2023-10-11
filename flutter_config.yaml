@@ -5,6 +5,35 @@ metadata:
   version: "1.0.0"
   build_number: "1"
 
+platform_specific:
+  android:
+    package_name: "com.example.myapp"
+    min_sdk_version: 21
+    target_sdk_version: 30
+    permissions:
+      - "CAMERA"
+      - "LOCATION"
+      - "MICROPHONE"
+    google_services_json: "path/to/google-services.json"
+    signing_config:
+      key_alias: "mykeyalias"
+      key_password: "keypassword"
+      key_store_path: "path/to/keystore.jks"
+      key_store_password: "keystorepassword"
+    
+  ios:
+    bundle_id: "com.example.myapp"
+    permissions:
+      - "CAMERA"
+      - "LOCATION"
+      - "MICROPHONE"
+    device_orientation:
+      - "portrait"
+      - "landscape"
+    push_notification_config:
+      certificate_path: "path/to/certificate.p12"
+      certificate_password: "certpassword"
+
 visual_assets:
   icons:
     # Android icons
@@ -41,3 +70,23 @@ visual_assets:
     # iOS store images
     ios_screenshot1: "path/to/ios_screenshot1.png"
     ios_screenshot2: "path/to/ios_screenshot2.png"
+
+integrations:
+  firebase:
+    android_config_path: "path/to/android_firebase_config.json"
+    ios_config_path: "path/to/ios_firebase_config.plist"
+  analytics_tool:
+    api_key: "your_analytics_api_key"
+    other_config: "other_config_value"
+
+signing_details:
+  android:
+    signing_config:
+      key_alias: "mykeyalias"
+      key_password: "keypassword"
+      key_store_path: "path/to/keystore.jks"
+      key_store_password: "keystorepassword"
+  ios:
+    push_notification_config:
+      certificate_path: "path/to/certificate.p12"
+      certificate_password: "certpassword"
