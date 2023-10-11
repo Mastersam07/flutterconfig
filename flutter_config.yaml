@@ -1,0 +1,43 @@
+metadata:
+  name: "MyApp"
+  display_name: "My Application"
+  description: "This is a sample application."
+  version: "1.0.0"
+  build_number: "1"
+
+visual_assets:
+  icons:
+    # Android icons
+    android_mdpi: "path/to/android_mdpi_icon.png"
+    android_hdpi: "path/to/android_hdpi_icon.png"
+    android_xhdpi: "path/to/android_xhdpi_icon.png"
+    android_xxhdpi: "path/to/android_xxhdpi_icon.png"
+    android_xxxhdpi: "path/to/android_xxxhdpi_icon.png"
+    
+    # iOS icons
+    ios_1x: "path/to/ios_1x_icon.png"
+    ios_2x: "path/to/ios_2x_icon.png"
+    ios_3x: "path/to/ios_3x_icon.png"
+  
+  splash_screens:
+    # Android splash screens
+    android_mdpi: "path/to/android_mdpi_splash.png"
+    android_hdpi: "path/to/android_hdpi_splash.png"
+    android_xhdpi: "path/to/android_xhdpi_splash.png"
+    android_xxhdpi: "path/to/android_xxhdpi_splash.png"
+    android_xxxhdpi: "path/to/android_xxxhdpi_splash.png"
+    
+    # iOS splash screens
+    ios_1x: "path/to/ios_1x_splash.png"
+    ios_2x: "path/to/ios_2x_splash.png"
+    ios_3x: "path/to/ios_3x_splash.png"
+  
+  store_images:
+    # Android store images
+    android_screenshot1: "path/to/android_screenshot1.png"
+    android_screenshot2: "path/to/android_screenshot2.png"
+    android_feature_graphic: "path/to/android_feature_graphic.png"
+    
+    # iOS store images
+    ios_screenshot1: "path/to/ios_screenshot1.png"
+    ios_screenshot2: "path/to/ios_screenshot2.png"
