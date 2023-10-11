@@ -1,7 +1,7 @@
 ## FlutterConfig CLI
 
 ![coverage][coverage_badge]
-[![License: MIT][license_badge]][license_link]
+[![License: Apache][license_badge]][license_link]
 
 FlutterConfig CLI to help with configurations in your applications..
 
@@ -61,5 +61,5 @@ $ open coverage/index.html
 ---
 
 [coverage_badge]: coverage_badge.svg
-[license_badge]: https://img.shields.io/badge/license-MIT-blue.svg
-[license_link]: https://opensource.org/licenses/MIT
+[license_badge]: https://img.shields.io/badge/license-Apache--2.0-success.svg
+[license_link]: ./LICENSE
