@@ -1,0 +1,43 @@
+name: FlutterConfig CLI CI
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  build:
+    name: Test and compile
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Dart SDK
+      uses: dart-lang/setup-dart@v3.0
+      with:
+        sdk: stable
+
+    - name: Install dependencies
+      run: pub get
+
+    - name: Format code
+      run: dart format . --set-exit-if-changed
+
+    - name: Lint analysis
+      run: dart analyze
+    
+    - name: Compile CLI
+      run: dart compile exe bin/flutterconfig.dart
+
+    - name: Run tests
+      run: dart test --coverage
+    
+    - name: Upload coverage to codecov
+      uses: codecov/codecov-action@v1.2.1
+      with:
+        file: ./coverage/lcov.info
+        token: ${{ secrets.CODECOV_TOKEN }}
