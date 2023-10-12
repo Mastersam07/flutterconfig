@@ -1,4 +1,4 @@
-name: FlutterConfig CLI CI
+name: FlutterConfig CLI
 
 on:
   push:
