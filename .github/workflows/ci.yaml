@@ -34,7 +34,7 @@ jobs:
       run: dart compile exe bin/flutterconfig.dart
 
     - name: Run tests
-      run: dart test --coverage
+      run: dart test --coverage=coverage
     
     - name: Upload coverage to codecov
       uses: codecov/codecov-action@v1.2.1
