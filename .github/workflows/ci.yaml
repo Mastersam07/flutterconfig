@@ -17,7 +17,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Set up Dart SDK
-      uses: dart-lang/setup-dart@v3.0
+      uses: dart-lang/setup-dart@v1
       with:
         sdk: stable
 
