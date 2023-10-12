@@ -1,3 +1,31 @@
+import 'dart:io';
+
+import 'package:args/command_runner.dart';
+import 'package:mason_logger/mason_logger.dart';
+
+/// {@template sample_command}
+///
+/// `flutterconfig sample`
+/// A [Command] to exemplify a sub command
+/// {@endtemplate}
+class InitCommand extends Command<int> {
+  /// {@macro sample_command}
+  InitCommand({
+    required Logger logger,
+  }) : _logger = logger;
+
+  @override
+  String get description =>
+      'Generates a sample flutter_config.yaml file with default values or placeholders.';
+
+  @override
+  String get name => 'init';
+
+  final Logger _logger;
+
+  @override
+  Future<int> run() async {
+    final configContent = '''
 metadata:
   name: "MyApp"
   display_name: "My Application"
@@ -90,3 +118,11 @@ signing_details:
     push_notification_config:
       certificate_path: "path/to/certificate.p12"
       certificate_password: "certpassword"
+''';
+
+    final configFile = File('flutter_config.yaml');
+    configFile.writeAsStringSync(configContent);
+    _logger.info('flutter_config.yaml has been created at ${configFile.path}!');
+    return ExitCode.success.code;
+  }
+}
