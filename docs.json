@@ -1,0 +1,15 @@
+{
+    "name": "FlutterConfig CLI",
+    "theme": "#36B9B9",
+    "logo": "/assets/logo.png",
+    "logoDark": "/assets/logo-dark.png",
+    "twitter": "https://twitter.com/mastersam_",
+    "sidebar": [
+      ["Home", "/"],
+      ["Getting Started", [
+        ["Overview", "/overview"],
+        ["Getting Started", "/getting-started"],
+        ["Configuratoin", "/configuration"]
+      ]]
+    ]
+  }
