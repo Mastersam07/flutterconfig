@@ -1,15 +1,45 @@
 {
-    "name": "FlutterConfig CLI",
-    "theme": "#36B9B9",
-    "logo": "/assets/logo.png",
-    "logoDark": "/assets/logo-dark.png",
-    "twitter": "https://twitter.com/mastersam_",
-    "sidebar": [
-      ["Home", "/"],
-      ["Getting Started", [
-        ["Overview", "/overview"],
+  "name": "FlutterConfig CLI",
+  "theme": "#36B9B9",
+  "logo": "https://raw.githubusercontent.com/Mastersam07/flutterconfig_cli/dev/docs/assets/flutterconfig-light.png",
+  "twitter": "mastersam_",
+  "anchors": [
+    {
+      "title": "Homepage",
+      "icon": "house",
+      "link": "https://github.com/mastersam07/flutterconfig_cli"
+    }
+  ],
+  "sidebar": [
+    [
+      "Getting Started",
+      [
+        ["Overview", "/"],
         ["Getting Started", "/getting-started"],
-        ["Configuratoin", "/configuration"]
-      ]]
+        ["Configuration", "/configuration"],
+        ["Usage", "/usage"]
+      ]
+    ],
+    [
+      "Configurations",
+      [
+        [
+          "Metadata",
+          "/metadata"
+        ],
+        [
+          "Platform Specific",
+          "/platform-specific"
+        ],
+        [
+          "Visual Assets",
+          "/visual-assets"
+        ]
+      ]
+    ],
+    [
+      "Contributing",
+      "/contributing"
     ]
-  }
+  ]
+}
