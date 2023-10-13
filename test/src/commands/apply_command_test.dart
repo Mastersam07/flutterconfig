@@ -1,31 +1,9 @@
-import 'dart:io';
-
-import 'package:args/command_runner.dart';
+import 'package:flutterconfig_cli/src/commands/commands.dart';
 import 'package:mason_logger/mason_logger.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:test/test.dart';
 
-/// {@template init_command}
-///
-/// `flutterconfig init`
-/// A [Command] to init configurations to a `flutter_config.yaml`
-/// {@endtemplate}
-class InitCommand extends Command<int> {
-  /// {@macro sample_command}
-  InitCommand({
-    required Logger logger,
-  }) : _logger = logger;
-
-  @override
-  String get description =>
-      'Generates a sample flutter_config.yaml file with default values or placeholders.';
-
-  @override
-  String get name => 'init';
-
-  final Logger _logger;
-
-  @override
-  Future<int> run() async {
-    final configContent = '''
+final fileContent = '''
 metadata:
   name: "MyApp"
   display_name: "My Application"
@@ -120,9 +98,52 @@ signing_details:
       certificate_password: "certpassword"
 ''';
 
-    final configFile = File('flutter_config.yaml');
-    configFile.writeAsStringSync(configContent);
-    _logger.info('flutter_config.yaml has been created at ${configFile.path}!');
-    return ExitCode.success.code;
-  }
+class _MockLogger extends Mock implements Logger {}
+
+void main() {
+  group('ApplyCommand', () {
+    late Logger mockLogger;
+    late ApplyCommand applyCommand;
+
+    setUp(() {
+      mockLogger = _MockLogger();
+
+      applyCommand = ApplyCommand(logger: mockLogger);
+    });
+
+    test(
+        'Should return error if not a Flutter project || android directory is missing || ios directory is missing',
+        () async {
+      expect(await applyCommand.run(), equals(ExitCode.config.code));
+    });
+
+    test('reads flutter_config.yaml correctly', () async {
+      final result = await applyCommand.run();
+      expect(result, equals(0)); // Assuming 0 is a success exit code.
+
+      // Verify that the logger was called with the expected messages.
+      verify(() =>
+          mockLogger.info('Configurations have been applied successfully!'));
+    });
+
+    test('handles missing flutter_config.yaml', () async {
+      final result = await applyCommand.run();
+      expect(
+          result, isNot(equals(0))); // Assuming non-zero is an error exit code.
+
+      // Verify that the logger was called with the error message.
+      verify(() => mockLogger.err(
+          'flutter_config.yaml does not exist. Please run `flutterconfig init` first.'));
+    });
+
+    // Add more tests for other scenarios, such as:
+    // - Applying metadata
+    // - Applying platform-specific configurations
+    // - Applying visual assets
+    // - Applying integrations
+    // - Applying signing details
+
+    // For each of these, you'd mock the relevant File objects, set their return values,
+    // run the command, and then verify the expected behavior.
+  });
 }
