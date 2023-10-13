@@ -3,7 +3,6 @@ import 'package:flutterconfig_cli/src/utils/file_accessor.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
-import 'package:yaml/yaml.dart';
 import '../../mocks.dart';
 
 void main() {
