@@ -2,6 +2,7 @@ import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:cli_completion/cli_completion.dart';
 import 'package:flutterconfig_cli/src/commands/commands.dart';
+import 'package:flutterconfig_cli/src/utils/file_accessor.dart';
 import 'package:flutterconfig_cli/src/version.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:pub_updater/pub_updater.dart';
@@ -23,8 +24,10 @@ class FlutterconfigCliCommandRunner extends CompletionCommandRunner<int> {
   FlutterconfigCliCommandRunner({
     Logger? logger,
     PubUpdater? pubUpdater,
+    FileAccessor? fileAccessor,
   })  : _logger = logger ?? Logger(),
         _pubUpdater = pubUpdater ?? PubUpdater(),
+        _fileAccessor = fileAccessor ?? RealFileAccessor(),
         super(executableName, description) {
     // Add root options and flags
     argParser
@@ -41,8 +44,8 @@ class FlutterconfigCliCommandRunner extends CompletionCommandRunner<int> {
 
     // Add sub commands
     addCommand(InitCommand(logger: _logger));
-    addCommand(ApplyCommand(logger: _logger));
-    addCommand(CheckCommand(logger: _logger));
+    addCommand(ApplyCommand(logger: _logger, fileAccessor: _fileAccessor));
+    addCommand(CheckCommand(logger: _logger, fileAccessor: _fileAccessor));
     addCommand(UpdateCommand(logger: _logger, pubUpdater: _pubUpdater));
   }
 
@@ -50,6 +53,7 @@ class FlutterconfigCliCommandRunner extends CompletionCommandRunner<int> {
   void printUsage() => _logger.info(usage);
 
   final Logger _logger;
+  final FileAccessor _fileAccessor;
   final PubUpdater _pubUpdater;
 
   @override

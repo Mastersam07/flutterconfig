@@ -4,6 +4,8 @@ import 'package:args/command_runner.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:yaml/yaml.dart';
 
+import '../utils/file_accessor.dart';
+
 /// {@template apply_command}
 ///
 /// `flutterconfig apply`
@@ -13,7 +15,9 @@ class ApplyCommand extends Command<int> {
   /// {@macro apply_command}
   ApplyCommand({
     required Logger logger,
-  }) : _logger = logger;
+    required FileAccessor fileAccessor,
+  })  : _logger = logger,
+        _fileAccessor = fileAccessor;
 
   @override
   String get description =>
@@ -23,30 +27,32 @@ class ApplyCommand extends Command<int> {
   String get name => 'apply';
 
   final Logger _logger;
+  final FileAccessor _fileAccessor;
 
   @override
   Future<int> run() async {
     // Check if it's a Flutter project by looking for the pubspec.yaml file
-    if (!File('pubspec.yaml').existsSync()) {
+    if (!_fileAccessor.existsSync('pubspec.yaml')) {
       _logger.err(
           'This does not seem to be a Flutter project. pubspec.yaml is missing.');
       return ExitCode.config.code;
     }
 
     // Check for the android and ios directories
-    if (!File('android').existsSync() || !File('ios').existsSync()) {
+    if (!_fileAccessor.existsSync('android') ||
+        !_fileAccessor.existsSync('ios')) {
       _logger.err(
           'This Flutter project seems to be missing either the android or ios directories.');
       return ExitCode.config.code;
     }
 
-    if (!File('flutter_config.yaml').existsSync()) {
+    if (!_fileAccessor.existsSync('flutter_config.yaml')) {
       _logger.err(
           'flutter_config.yaml does not exist. Please run `flutterconfig init` first.');
       return ExitCode.config.code;
     }
 
-    final configContent = File('flutter_config.yaml').readAsStringSync();
+    final configContent = _fileAccessor.readAsStringSync('flutter_config.yaml');
     final configYaml = loadYaml(configContent);
     final Map<String, dynamic> config = Map<String, dynamic>.from(configYaml);
 
