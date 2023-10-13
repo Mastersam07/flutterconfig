@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:args/command_runner.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:yaml/yaml.dart';
@@ -77,13 +75,12 @@ class ApplyCommand extends Command<int> {
   }
 
   void _applyMetadata(Map<String, dynamic> metadata) {
-    final pubspecFile = File('pubspec.yaml');
-    if (!pubspecFile.existsSync()) {
+    if (!_fileAccessor.existsSync('pubspec.yaml')) {
       _logger.err('pubspec.yaml does not exist.');
       return;
     }
 
-    var content = pubspecFile.readAsStringSync();
+    var content = _fileAccessor.readAsStringSync('pubspec.yaml');
 
     // Update app name, version, etc.
     content =
@@ -91,16 +88,15 @@ class ApplyCommand extends Command<int> {
     content = content.replaceAll(
         RegExp(r'version: \d+\.\d+\.\d+'), 'version: ${metadata['version']}');
 
-    pubspecFile.writeAsStringSync(content);
+    _fileAccessor.writeAsStringSync('pubspec.yaml', content);
     _logger.info('Metadata applied successfully.');
   }
 
   void _applyPlatformSpecificConfig(Map<String, dynamic> platformConfig) {
     // For Android
-    final androidManifestFile =
-        File('android/app/src/main/AndroidManifest.xml');
-    if (androidManifestFile.existsSync()) {
-      var content = androidManifestFile.readAsStringSync();
+    if (_fileAccessor.existsSync('android/app/src/main/AndroidManifest.xml')) {
+      var content = _fileAccessor
+          .readAsStringSync('android/app/src/main/AndroidManifest.xml');
 
       // Update permissions
       final permissions = platformConfig['android']['permissions'] as List;
@@ -111,13 +107,13 @@ class ApplyCommand extends Command<int> {
         }
       }
 
-      androidManifestFile.writeAsStringSync(content);
+      _fileAccessor.writeAsStringSync(
+          'android/app/src/main/AndroidManifest.xml', content);
     }
 
     // For iOS
-    final infoPlistFile = File('ios/Runner/Info.plist');
-    if (infoPlistFile.existsSync()) {
-      var content = infoPlistFile.readAsStringSync();
+    if (_fileAccessor.existsSync('ios/Runner/Info.plist')) {
+      var content = _fileAccessor.readAsStringSync('ios/Runner/Info.plist');
 
       // Update permissions
       final permissions = platformConfig['ios']['permissions'] as List;
@@ -128,39 +124,36 @@ class ApplyCommand extends Command<int> {
         }
       }
 
-      infoPlistFile.writeAsStringSync(content);
+      _fileAccessor.writeAsStringSync('ios/Runner/Info.plist', content);
     }
 
     _logger.info('Platform-specific configurations applied successfully.');
   }
 
   void _applyVisualAssets(Map<String, dynamic> visualAssets) {
-    // We'll just log the paths.
-    // You should copy these assets to the respective directories.
+    // TODO:
     _logger.info('Visual assets paths:');
-    for (var assetType in visualAssets.keys) {
-      final assets = visualAssets[assetType] as Map;
-      for (var asset in assets.keys) {
-        _logger.info('$assetType - $asset: ${assets[asset]}');
-      }
-    }
+    // for (var assetType in visualAssets.keys) {
+    //   final assets = visualAssets[assetType] as Map;
+    //   for (var asset in assets.keys) {
+    //     _logger.info('$assetType - $asset: ${assets[asset]}');
+    //   }
+    // }
   }
 
   void _applyIntegrations(Map<String, dynamic> integrations) {
-    // We'll just log the paths.
-    // You should copy these assets to the respective directories.
+    // TODO:
     _logger.info('Integrations:');
-    for (var integration in integrations.keys) {
-      _logger.info('$integration: ${integrations[integration]}');
-    }
+    // for (var integration in integrations.keys) {
+    //   _logger.info('$integration: ${integrations[integration]}');
+    // }
   }
 
   void _applySigningDetails(Map<String, dynamic> signingDetails) {
-    // We'll just log the paths.
-    // You should copy these assets to the respective directories.
+    // TODO:
     _logger.info('Signing details:');
-    for (var platform in signingDetails.keys) {
-      _logger.info('$platform: ${signingDetails[platform]}');
-    }
+    // for (var platform in signingDetails.keys) {
+    //   _logger.info('$platform: ${signingDetails[platform]}');
+    // }
   }
 }

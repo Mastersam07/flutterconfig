@@ -5,7 +5,7 @@ import 'package:mason_logger/mason_logger.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-class _MockLogger extends Mock implements Logger {}
+import '../../mocks.dart';
 
 void main() {
   group('init', () {
@@ -13,7 +13,7 @@ void main() {
     late InitCommand initCommand;
 
     setUp(() {
-      logger = _MockLogger();
+      logger = MockLogger();
       initCommand = InitCommand(logger: logger);
     });
 
