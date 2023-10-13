@@ -89,8 +89,6 @@ void main() {
 
       final result = await applyCommand.run();
 
-      print(capturedLogs);
-
       expect(result, equals(ExitCode.success.code));
       verify(() => mockLogger.info(any())).called(capturedLogs.length);
 
