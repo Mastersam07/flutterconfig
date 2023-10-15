@@ -2,6 +2,7 @@ import 'dart:io';
 
 abstract class FileAccessor {
   bool existsSync(String path);
+  bool directoryExistsSync(String path);
   String readAsStringSync(String path);
   void writeAsStringSync(String path, String content);
 }
@@ -16,5 +17,11 @@ class RealFileAccessor implements FileAccessor {
   @override
   void writeAsStringSync(String path, String content) {
     File(path).writeAsStringSync(content);
+  }
+
+  @override
+  bool directoryExistsSync(String path) {
+    final directory = Directory(path);
+    return directory.existsSync();
   }
 }

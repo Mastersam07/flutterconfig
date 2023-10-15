@@ -36,12 +36,11 @@ metadata:
 platform_specific:
   android:
     package_name: "com.example.myapp"
+    label: "MyApp"
     min_sdk_version: 21
     target_sdk_version: 30
     permissions:
-      - "CAMERA"
-      - "LOCATION"
-      - "MICROPHONE"
+      - "android.permission.INTERNET"
     google_services_json: "path/to/google-services.json"
     signing_config:
       key_alias: "mykeyalias"
@@ -51,10 +50,9 @@ platform_specific:
     
   ios:
     bundle_id: "com.example.myapp"
+    label: "MyApp"
     permissions:
-      - "CAMERA"
-      - "LOCATION"
-      - "MICROPHONE"
+      - "NSCameraUsageDescription"
     device_orientation:
       - "portrait"
       - "landscape"

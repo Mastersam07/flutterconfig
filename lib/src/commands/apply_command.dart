@@ -37,8 +37,8 @@ class ApplyCommand extends Command<int> {
     }
 
     // Check for the android and ios directories
-    if (!_fileAccessor.existsSync('android') ||
-        !_fileAccessor.existsSync('ios')) {
+    if (!_fileAccessor.directoryExistsSync('android') ||
+        !_fileAccessor.directoryExistsSync('ios')) {
       _logger.err(
           'This Flutter project seems to be missing either the android or ios directories.');
       return ExitCode.config.code;
@@ -107,6 +107,19 @@ class ApplyCommand extends Command<int> {
         }
       }
 
+      // Update label
+      final androidLabel = platformConfig['android']['label'];
+      if (androidLabel != null) {
+        final labelRegex = RegExp(r'android:label="[^"]+"');
+        if (labelRegex.hasMatch(content)) {
+          content =
+              content.replaceAll(labelRegex, 'android:label="$androidLabel"');
+        } else {
+          content = content.replaceFirst(
+              '<application', '<application android:label="$androidLabel"');
+        }
+      }
+
       _fileAccessor.writeAsStringSync(
           'android/app/src/main/AndroidManifest.xml', content);
     }
@@ -121,6 +134,20 @@ class ApplyCommand extends Command<int> {
         if (!content.contains(permission)) {
           content = content.replaceFirst('</dict>',
               '  <key>$permission</key>\n  <string>Permission description here</string>\n</dict>');
+        }
+      }
+
+      // Update CFBundleDisplayName
+      final iosLabel = platformConfig['ios']['label'];
+      if (iosLabel != null) {
+        final labelRegex =
+            RegExp(r'<key>CFBundleDisplayName</key>\s*<string>[^<]+</string>');
+        if (labelRegex.hasMatch(content)) {
+          content = content.replaceAll(labelRegex,
+              '<key>CFBundleDisplayName</key>\n<string>$iosLabel</string>');
+        } else {
+          content = content.replaceFirst('</dict>',
+              '  <key>CFBundleDisplayName</key>\n  <string>$iosLabel</string>\n</dict>');
         }
       }
 
