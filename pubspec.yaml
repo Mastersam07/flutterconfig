@@ -1,8 +1,8 @@
 name: flutterconfig_cli
 description: FlutterConfig CLI to help with configurations in your applications.
 version: 0.0.1
-homepage: https://github.com/mastersam07/flutterconfig_cli
-repository: https://github.com/mastersam07/flutterconfig_cli
+homepage: https://docs.page/Mastersam07/flutterconfig_cli
+repository: https://github.com/mastersam07/flutterconfig
 
 environment:
   sdk: ">=3.0.0 <4.0.0"

@@ -44,6 +44,7 @@ class FlutterconfigCliCommandRunner extends CompletionCommandRunner<int> {
 
     // Add sub commands
     addCommand(InitCommand(logger: _logger));
+    addCommand(DoctorCommand(logger: _logger, fileAccessor: _fileAccessor));
     addCommand(ApplyCommand(logger: _logger, fileAccessor: _fileAccessor));
     addCommand(CheckCommand(logger: _logger, fileAccessor: _fileAccessor));
     addCommand(UpdateCommand(logger: _logger, pubUpdater: _pubUpdater));
