@@ -160,6 +160,7 @@ class ApplyCommand extends Command<int> {
           _fileAccessor.writeAsStringSync(gradlePath, gradleContent);
         }
 
+        // Update namespace
         final namespaceRegex = RegExp(r'namespace\s+"([^"]+)"');
         if (namespaceRegex.hasMatch(gradleContent)) {
           gradleContent = gradleContent.replaceAll(
@@ -167,7 +168,50 @@ class ApplyCommand extends Command<int> {
           _fileAccessor.writeAsStringSync(gradlePath, gradleContent);
         }
 
-        _logger.info('oldGradleContent: $oldGradleContent');
+        final androidMinSdkVersion =
+            platformConfig['android']['min_sdk_version'];
+        final androidTargetSdkVersion =
+            platformConfig['android']['target_sdk_version'];
+
+        // Update minSdkVersion if provided
+        if (androidMinSdkVersion != null) {
+          final minSdkVersionRegex = RegExp(r'minSdkVersion\s+([^\s]+)');
+          if (minSdkVersionRegex.hasMatch(gradleContent)) {
+            gradleContent = gradleContent.replaceAll(
+                minSdkVersionRegex, 'minSdkVersion $androidMinSdkVersion');
+            _fileAccessor.writeAsStringSync(gradlePath, gradleContent);
+          } else {
+            // If for some reason the minSdkVersion is not found, you can decide to add it or log an error.
+            _logger.err('minSdkVersion not found in build.gradle');
+          }
+        }
+
+        // Update targetSdkVersion if provided
+        if (androidTargetSdkVersion != null) {
+          final targetSdkVersionRegex = RegExp(r'targetSdkVersion\s+([^\s]+)');
+          if (targetSdkVersionRegex.hasMatch(gradleContent)) {
+            gradleContent = gradleContent.replaceAll(targetSdkVersionRegex,
+                'targetSdkVersion $androidTargetSdkVersion');
+            _fileAccessor.writeAsStringSync(gradlePath, gradleContent);
+          } else {
+            // If for some reason the targetSdkVersion is not found, you can decide to add it or log an error.
+            _logger.err('targetSdkVersion not found in build.gradle');
+          }
+        }
+
+        // Update compileSdkVersion if provided
+        if (androidTargetSdkVersion != null) {
+          final compileSdkVersionRegex =
+              RegExp(r'compileSdkVersion\s+([^\s]+)');
+          if (compileSdkVersionRegex.hasMatch(gradleContent)) {
+            gradleContent = gradleContent.replaceAll(compileSdkVersionRegex,
+                'compileSdkVersion $androidTargetSdkVersion');
+            _fileAccessor.writeAsStringSync(gradlePath, gradleContent);
+          } else {
+            // If for some reason the targetSdkVersion is not found, you can decide to add it or log an error.
+            _logger.err('targetSdkVersion not found in build.gradle');
+          }
+        }
 
         final match = applicationIdRegex.firstMatch(oldGradleContent);
         if (match != null) {
@@ -175,9 +219,6 @@ class ApplyCommand extends Command<int> {
           final oldPackagePath = oldPackageName!.replaceAll('.', '/');
           final newPackageName = platformConfig['android']['package_name'];
           final newPackagePath = newPackageName.replaceAll('.', '/');
-
-          _logger.info('oldPackageName: $oldPackageName');
-          _logger.info('oldPackagePath: $oldPackagePath');
 
           final mainActivityPath =
               'android/app/src/main/kotlin/$oldPackagePath/MainActivity.kt';
@@ -214,6 +255,7 @@ class ApplyCommand extends Command<int> {
               }
             }
           }
+
           // Update references in the code
           final files = _fileAccessor.listSync(
               "android/app/src/main/kotlin/$newPackageName",
