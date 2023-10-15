@@ -1,7 +1,7 @@
 ## FlutterConfig CLI
 
-[![FlutterConfig CLI](https://github.com/Mastersam07/flutterconfig_cli/actions/workflows/ci.yaml/badge.svg?branch=dev)](https://github.com/Mastersam07/flutterconfig_cli/actions/workflows/ci.yaml)
-[![codecov](https://codecov.io/gh/Mastersam07/flutterconfig_cli/graph/badge.svg?token=uTZC3hYm7Y&co)](https://codecov.io/gh/Mastersam07/flutterconfig_cli)
+[![FlutterConfig CLI](https://github.com/Mastersam07/flutterconfig/actions/workflows/ci.yaml/badge.svg?branch=dev)](https://github.com/Mastersam07/flutterconfig/actions/workflows/ci.yaml)
+[![codecov](https://codecov.io/gh/Mastersam07/flutterconfig/graph/badge.svg?token=uTZC3hYm7Y&co)](https://codecov.io/gh/Mastersam07/flutterconfig)
 [![License: Apache][license_badge]][license_link]
 
 FlutterConfig CLI to help with configurations in your applications.
