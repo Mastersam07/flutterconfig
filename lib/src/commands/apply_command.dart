@@ -90,6 +90,17 @@ class ApplyCommand extends Command<int> {
       (match) => 'name: ${_toCamelCase(metadata['name'])}',
     );
 
+    // Update app description
+    // Update description if provided
+    final description = metadata['description'];
+    if (description != null) {
+      final descriptionRegex = RegExp(r'description: [^\n]+');
+      if (descriptionRegex.hasMatch(content)) {
+        content =
+            content.replaceAll(descriptionRegex, 'description: $description');
+      } // No need for an else block since we're maintaining the existing description if not found.
+    }
+
     // Extract the existing version and build number
     var existingVersionMatch =
         RegExp(r'version: (\d+\.\d+\.\d+)\+(\d+)').firstMatch(content);
