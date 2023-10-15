@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:args/command_runner.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:yaml/yaml.dart';
@@ -82,11 +84,27 @@ class ApplyCommand extends Command<int> {
 
     var content = _fileAccessor.readAsStringSync('pubspec.yaml');
 
-    // Update app name, version, etc.
-    content =
-        content.replaceAll(RegExp(r'name: \w+'), 'name: ${metadata['name']}');
+    // Update app name
+    content = content.replaceAllMapped(
+      RegExp(r'name: \w+'),
+      (match) => 'name: ${_toCamelCase(metadata['name'])}',
+    );
+
+    // Extract the existing version and build number
+    var existingVersionMatch =
+        RegExp(r'version: (\d+\.\d+\.\d+)\+(\d+)').firstMatch(content);
+    var existingVersion = existingVersionMatch?.group(1) ?? '1.0.0';
+    var existingBuildNumber = existingVersionMatch?.group(2) ?? '1';
+
+    // Use the version and build number from metadata if available, otherwise use the existing values
+    var newVersion = metadata['version'] ?? existingVersion;
+    var newBuildNumber =
+        metadata['build_number']?.toString() ?? existingBuildNumber;
+
     content = content.replaceAll(
-        RegExp(r'version: \d+\.\d+\.\d+'), 'version: ${metadata['version']}');
+      RegExp(r'version: \d+\.\d+\.\d+\+\d+'),
+      'version: $newVersion+$newBuildNumber',
+    );
 
     _fileAccessor.writeAsStringSync('pubspec.yaml', content);
     _logger.info('Metadata applied successfully.');
@@ -124,6 +142,108 @@ class ApplyCommand extends Command<int> {
           'android/app/src/main/AndroidManifest.xml', content);
     }
 
+    final androidPackageName = platformConfig['android']['package_name'];
+    if (androidPackageName != null) {
+      // Update android/app/build.gradle
+      final gradlePath = 'android/app/build.gradle';
+      if (_fileAccessor.existsSync(gradlePath)) {
+        var gradleContent = _fileAccessor.readAsStringSync(gradlePath);
+
+        var oldGradleContent = gradleContent;
+
+        // Update application id
+        // final applicationIdRegex = RegExp(r'applicationId "[^"]+"');
+        final applicationIdRegex = RegExp(r'applicationId\s+"([^"]+)"');
+        if (applicationIdRegex.hasMatch(gradleContent)) {
+          gradleContent = gradleContent.replaceAll(
+              applicationIdRegex, 'applicationId "$androidPackageName"');
+          _fileAccessor.writeAsStringSync(gradlePath, gradleContent);
+        }
+
+        final namespaceRegex = RegExp(r'namespace\s+"([^"]+)"');
+        if (namespaceRegex.hasMatch(gradleContent)) {
+          gradleContent = gradleContent.replaceAll(
+              namespaceRegex, 'namespace "$androidPackageName"');
+          _fileAccessor.writeAsStringSync(gradlePath, gradleContent);
+        }
+
+        _logger.info('oldGradleContent: $oldGradleContent');
+
+        final match = applicationIdRegex.firstMatch(oldGradleContent);
+        if (match != null) {
+          final oldPackageName = match.group(1);
+          final oldPackagePath = oldPackageName!.replaceAll('.', '/');
+          final newPackageName = platformConfig['android']['package_name'];
+          final newPackagePath = newPackageName.replaceAll('.', '/');
+
+          _logger.info('oldPackageName: $oldPackageName');
+          _logger.info('oldPackagePath: $oldPackagePath');
+
+          final mainActivityPath =
+              'android/app/src/main/kotlin/$oldPackagePath/MainActivity.kt';
+          if (_fileAccessor.existsSync(mainActivityPath)) {
+            var mainActivityContent =
+                _fileAccessor.readAsStringSync(mainActivityPath);
+            final packageRegex = RegExp(r'^package [^\n]+', multiLine: true);
+            if (packageRegex.hasMatch(mainActivityContent)) {
+              mainActivityContent = mainActivityContent.replaceAll(
+                  packageRegex, 'package $newPackageName');
+              _fileAccessor.writeAsStringSync(
+                  mainActivityPath, mainActivityContent);
+              var currentDirectory = Directory.current.path;
+              final oldDirectoryPath =
+                  "$currentDirectory/android/app/src/main/kotlin/$oldPackagePath";
+              final newDirectoryPath =
+                  "$currentDirectory/android/app/src/main/kotlin/$newPackagePath";
+
+              if (_fileAccessor.directoryExistsSync(oldDirectoryPath)) {
+                if (!_fileAccessor.directoryExistsSync(newDirectoryPath)) {
+                  try {
+                    _fileAccessor.renameDirectoryWithCopy(
+                        oldDirectoryPath, newDirectoryPath);
+                  } catch (e) {
+                    _logger.err('Failed to rename directory: $e');
+                  }
+                } else {
+                  _logger.info(
+                      'Target directory already exists: $newDirectoryPath');
+                }
+              } else {
+                _logger
+                    .err('Source directory does not exist: $oldDirectoryPath');
+              }
+            }
+          }
+          // Update references in the code
+          final files = _fileAccessor.listSync(
+              "android/app/src/main/kotlin/$newPackageName",
+              recursive: true);
+          for (final file in files) {
+            if (file is File && file.path.endsWith('.kt')) {
+              var content = file.readAsStringSync();
+              content = content.replaceAll(oldPackageName, newPackageName);
+              file.writeAsStringSync(content);
+            }
+          }
+        }
+      }
+
+      // Update MainActivity.kt
+      final mainActivityPath =
+          'android/app/src/main/kotlin/com/example/myapp/MainActivity.kt';
+      if (_fileAccessor.existsSync(mainActivityPath)) {
+        var mainActivityContent =
+            _fileAccessor.readAsStringSync(mainActivityPath);
+        final packageRegex = RegExp(r'^package [^\n]+', multiLine: true);
+        if (packageRegex.hasMatch(mainActivityContent)) {
+          mainActivityContent = mainActivityContent.replaceAll(
+              packageRegex, 'package $androidPackageName');
+          _fileAccessor.writeAsStringSync(
+              mainActivityPath, mainActivityContent);
+        }
+      }
+    }
+
     // For iOS
     if (_fileAccessor.existsSync('ios/Runner/Info.plist')) {
       var content = _fileAccessor.readAsStringSync('ios/Runner/Info.plist');
@@ -131,7 +251,8 @@ class ApplyCommand extends Command<int> {
       // Update permissions
       final permissions = platformConfig['ios']['permissions'] as List;
       for (var permission in permissions) {
-        if (!content.contains(permission)) {
+        final permissionPattern = RegExp('<key>$permission</key>');
+        if (!permissionPattern.hasMatch(content)) {
           content = content.replaceFirst('</dict>',
               '  <key>$permission</key>\n  <string>Permission description here</string>\n</dict>');
         }
@@ -144,10 +265,24 @@ class ApplyCommand extends Command<int> {
             RegExp(r'<key>CFBundleDisplayName</key>\s*<string>[^<]+</string>');
         if (labelRegex.hasMatch(content)) {
           content = content.replaceAll(labelRegex,
-              '<key>CFBundleDisplayName</key>\n<string>$iosLabel</string>');
+              '<key>CFBundleDisplayName</key>\n\t<string>$iosLabel</string>');
         } else {
           content = content.replaceFirst('</dict>',
-              '  <key>CFBundleDisplayName</key>\n  <string>$iosLabel</string>\n</dict>');
+              '  <key>CFBundleDisplayName</key>\n\t<string>$iosLabel</string>\n</dict>');
+        }
+      }
+
+      // Update CFBundleIdentifier
+      final iosBundleId = platformConfig['ios']['bundle_id'];
+      if (iosBundleId != null) {
+        final bundleIdRegex =
+            RegExp(r'<key>CFBundleIdentifier</key>\s*<string>[^<]+</string>');
+        if (bundleIdRegex.hasMatch(content)) {
+          content = content.replaceAll(bundleIdRegex,
+              '<key>CFBundleIdentifier</key>\n\t<string>$iosBundleId</string>');
+        } else {
+          content = content.replaceFirst('</dict>',
+              '  <key>CFBundleIdentifier</key>\n\t<string>$iosBundleId</string>\n</dict>');
         }
       }
 
@@ -183,4 +318,13 @@ class ApplyCommand extends Command<int> {
     //   _logger.info('$platform: ${signingDetails[platform]}');
     // }
   }
+}
+
+String _toCamelCase(String text) {
+  List<String> words = text.split(RegExp(r'[_\s]'));
+  String firstWord = words.first.toLowerCase();
+  String remainingWords = words.skip(1).map((word) {
+    return word[0].toUpperCase() + word.substring(1).toLowerCase();
+  }).join('');
+  return firstWord + remainingWords;
 }

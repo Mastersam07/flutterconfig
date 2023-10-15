@@ -5,6 +5,9 @@ abstract class FileAccessor {
   bool directoryExistsSync(String path);
   String readAsStringSync(String path);
   void writeAsStringSync(String path, String content);
+  void renameSync(String oldPath, String newPath);
+  List<FileSystemEntity> listSync(String path, {bool recursive = false});
+  void renameDirectoryWithCopy(String oldPath, String newPath);
 }
 
 class RealFileAccessor implements FileAccessor {
@@ -23,5 +26,46 @@ class RealFileAccessor implements FileAccessor {
   bool directoryExistsSync(String path) {
     final directory = Directory(path);
     return directory.existsSync();
+  }
+
+  @override
+  void renameSync(String oldPath, String newPath) {
+    final oldDirectory = Directory(oldPath);
+    if (oldDirectory.existsSync()) {
+      oldDirectory.renameSync(newPath);
+    }
+  }
+
+  @override
+  List<FileSystemEntity> listSync(String path, {bool recursive = false}) {
+    final directory = Directory(path);
+    if (directory.existsSync()) {
+      return directory.listSync(recursive: recursive);
+    }
+    return [];
+  }
+
+  @override
+  void renameDirectoryWithCopy(String oldPath, String newPath) {
+    // 1. Create the new directory
+    final newDir = Directory(newPath);
+    if (!newDir.existsSync()) {
+      newDir.createSync(recursive: true);
+    }
+
+    // 2. Copy all contents from the old directory to the new directory
+    final oldDir = Directory(oldPath);
+    for (var entity in oldDir.listSync(recursive: false)) {
+      if (entity is File) {
+        final newPathForFile = entity.path.replaceFirst(oldPath, newPath);
+        entity.copySync(newPathForFile);
+      } else if (entity is Directory) {
+        final newPathForDir = entity.path.replaceFirst(oldPath, newPath);
+        renameDirectoryWithCopy(entity.path, newPathForDir);
+      }
+    }
+
+    // 3. Delete the old directory
+    oldDir.deleteSync(recursive: true);
   }
 }
