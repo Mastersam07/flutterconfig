@@ -75,17 +75,23 @@ visual_assets:
     ios_3x: "path/to/ios_3x_icon.png"
   
   splash_screens:
-    # Android splash screens
-    android_mdpi: "path/to/android_mdpi_splash.png"
-    android_hdpi: "path/to/android_hdpi_splash.png"
-    android_xhdpi: "path/to/android_xhdpi_splash.png"
-    android_xxhdpi: "path/to/android_xxhdpi_splash.png"
-    android_xxxhdpi: "path/to/android_xxxhdpi_splash.png"
-    
-    # iOS splash screens
-    ios_1x: "path/to/ios_1x_splash.png"
-    ios_2x: "path/to/ios_2x_splash.png"
-    ios_3x: "path/to/ios_3x_splash.png"
+    # This generates native code to customize Flutter's default white native splash screen
+    # with background color and splash image.
+    # Customize the parameters below
+
+    # color or background_image is the only required parameter.  Use color to set the background
+    # of your splash screen to a solid color.  Use background_image to set the background of your
+    # splash screen to a png image.  This is useful for gradients. The image will be stretch to the
+    # size of the app. Only one parameter can be used, color and background_image cannot both be set.
+    color: "#42a5f5"
+    #background_image: "assets/background.png"
+
+    # Optional parameters are listed below.  To enable a parameter, uncomment the line by removing
+    # the leading # character.
+
+    # The image parameter allows you to specify an image used in the splash screen.  It must be a
+    # png file and should be sized for 4x pixel density.
+    #image: assets/splash.png
   
   store_images:
     # Android store images

@@ -253,12 +253,14 @@ class ApplyCommand extends Command<int> {
                   try {
                     _fileAccessor.renameDirectoryWithCopy(
                         oldDirectoryPath, newDirectoryPath);
+                    _fileAccessor.deleteDirectory(oldDirectoryPath);
                   } catch (e) {
                     _logger.err('Failed to rename directory: $e');
                   }
                 } else {
-                  _logger.info(
-                      'Target directory already exists: $newDirectoryPath');
+                  _fileAccessor.copyFromDirectory(
+                      oldDirectoryPath, newDirectoryPath);
+                  _fileAccessor.deleteDirectory(oldDirectoryPath);
                 }
               } else {
                 _logger
@@ -346,14 +348,46 @@ class ApplyCommand extends Command<int> {
   }
 
   void _applyVisualAssets(Map<String, dynamic> visualAssets) {
-    // TODO:
-    _logger.info('Visual assets paths:');
-    // for (var assetType in visualAssets.keys) {
-    //   final assets = visualAssets[assetType] as Map;
-    //   for (var asset in assets.keys) {
-    //     _logger.info('$assetType - $asset: ${assets[asset]}');
-    //   }
-    // }
+    // Handle splash screens using flutter_native_splash
+    final splashConfig = visualAssets['splash_screens'];
+    if (splashConfig != null) {
+      final image = splashConfig['image'];
+      final backgroundImage = splashConfig['background_image'];
+      final color = splashConfig['color'];
+
+      if (backgroundImage != null && color != null) {
+        _logger.err(
+            'Both background_image and color are provided for splash screen. Please provide only one.');
+        return;
+      }
+
+      if (backgroundImage == null && color == null) {
+        _logger.err(
+            'Either background_image or color must be provided for splash screen.');
+        return;
+      }
+
+      final config = {
+        'flutter_native_splash': {
+          'background_image':
+              backgroundImage, // This will be null if not provided
+          'color': color, // This will be null if not provided
+          'image': image, // This will be null if not provided
+          // Other configurations
+        }
+      };
+
+      final configFilePath = 'flutter_native_splash.yaml';
+
+      final yamlString = mapToYaml(config);
+      _fileAccessor.writeAsStringSync(configFilePath, yamlString);
+
+      // TODO:
+      // Run flutter_native_splash
+      // _runFlutterNativeSplash();
+      // Clean up by deleting the temporary config file
+      // _fileAccessor.deleteSync(configFilePath);
+    }
   }
 
   void _applyIntegrations(Map<String, dynamic> integrations) {
@@ -370,6 +404,22 @@ class ApplyCommand extends Command<int> {
     // for (var platform in signingDetails.keys) {
     //   _logger.info('$platform: ${signingDetails[platform]}');
     // }
+  }
+
+  String mapToYaml(Map<dynamic, dynamic> map) {
+    var yaml = '';
+    map.forEach((key, value) {
+      if (value is Map) {
+        yaml += '$key:\n${indentString(mapToYaml(value))}';
+      } else {
+        yaml += '$key: $value\n';
+      }
+    });
+    return yaml;
+  }
+
+  String indentString(String input, [String indent = '  ']) {
+    return input.split('\n').map((line) => '$indent$line').join('\n');
   }
 }
 
